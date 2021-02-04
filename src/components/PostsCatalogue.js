@@ -4,25 +4,45 @@ import { Link, graphql, StaticQuery } from 'gatsby'
 import PreviewCompatibleImage from './PreviewCompatibleImage'
 import _ from 'lodash'
 
-const getTags = posts => {
-    const allTags = _.uniq(_.flatten(posts.map(({ node: post }) => {
-        return post.frontmatter.tags
-    })));
-    return allTags.map(tag => {return <div>
-        <input type="checkbox" name={tag}></input>
-        <label for={tag}>{tag}</label>
-    </div>})
-}
-
 class PostsCatalogue extends React.Component {
+    state = {
+        test: "",
+        brewing: "",
+        chemex: "",
+        jamaica: "",
+      }
+
+      handleInputChange = event => {
+        console.log("blabla")
+        const target = event.target
+        const value = target.value
+        const name = target.name
+        this.setState({
+          [name]: value,
+        })
+      }
+      handleSubmit = event => {
+          console.log("bla")
+        event.preventDefault()
+        console.log(`test: ${this.state.test} brewing: ${this.state.brewing} chemex: ${this.state.chemex} jamaica: ${this.state.jamaica}!`)
+      }
+
     render() {
         const { data } = this.props
         const { edges: posts } = data.allMarkdownRemark
-
         return (
             <div className="">
                 <div>
-                    {getTags(posts)}
+                    {(() => {
+                        const allTags = _.uniq(_.flatten(posts.map(({ node: post }) => {
+                            return post.frontmatter.tags
+                        })));
+                        return allTags.map(tag => {return <form onSubmit={this.handleSubmit}>
+                            <input type="checkbox" name={tag} onChange={this.handleInputChange}></input>
+                            <label for={tag}>{tag}</label>
+                        </form>})
+                    })()
+                    }
                 </div>
                 { posts &&
                     posts.map(({ node: post }) => (
